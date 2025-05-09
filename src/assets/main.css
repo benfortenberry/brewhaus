@@ -1,35 +1,97 @@
 @import './base.css';
 
-#app {
-  max-width: 1280px;
+h1,
+h2,
+h3 {
+  font-family: 'Tagesschrift', system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+html {
+  --s: 60px; /* control the size*/
+  --c1: #4d220f;
+  --c2: #5a2811;
+
+  --_g: #0000 83%, var(--c1) 85% 99%, #0000 101%;
+  background:
+    radial-gradient(27% 29% at right, var(--_g)) calc(var(--s) / 2) var(--s),
+    radial-gradient(27% 29% at left, var(--_g)) calc(var(--s) / -2) var(--s),
+    radial-gradient(29% 27% at top, var(--_g)) 0 calc(var(--s) / 2),
+    radial-gradient(29% 27% at bottom, var(--_g)) 0 calc(var(--s) / -2) var(--c2);
+  background-size: calc(2 * var(--s)) calc(2 * var(--s));
+}
+body {
+  color: #fee68c;
+}
+
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Tuffy', system-ui;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+  padding: 1rem;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: -0.5rem;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+.col {
+  flex: 1;
+  padding: 0.5rem;
+}
+
+.col-2 {
+  flex: 0 0 16.666%;
+}
+
+.col-4 {
+  flex: 0 0 33.333%;
+}
+
+.col-6 {
+  flex: 0 0 50%;
+}
+
+.col-12 {
+  flex: 0 0 100%;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 768px) {
+  .col-2,
+  .col-4,
+  .col-6,
+  .col-12 {
+    flex: 0 0 100%;
   }
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
+header {
+  color: #fee68c;
+  padding: 1rem 0;
+  text-align: center;
+}
 
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+a {
+  color: #fee68c;
 }
