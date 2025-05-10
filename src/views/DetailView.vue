@@ -13,7 +13,13 @@
             <strong>Website:</strong>
             &nbsp;<a :href="brewery.website_url" target="_blank">{{ brewery.website_url }}</a>
           </p>
-          <p><strong>Phone Number:</strong> {{ formattedPhoneNumber }}</p>
+          <p>
+            <strong>Phone:&nbsp;</strong>
+
+            <a :tel="brewery.phone">
+              {{ formattedPhoneNumber }}
+            </a>
+          </p>
           <br /><br />
           <router-link to="/"> Back to List </router-link>
         </div>
