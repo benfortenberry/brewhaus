@@ -19,12 +19,7 @@
         </div>
 
         <div class="col-6">
-          <GoogleMap
-            :api-key="mapKey"
-            style="width: 100%; height: 500px"
-            :center="center"
-            :zoom="15"
-          >
+          <GoogleMap :api-key="mapKey" class="map" :center="center" :zoom="15">
             <Marker :options="{ position: center }" />
           </GoogleMap>
         </div>
@@ -98,5 +93,10 @@ a:hover {
 
 .detail {
   text-align: center;
+}
+
+.map {
+  width: 100%;
+  height: 400px;
 }
 </style>
