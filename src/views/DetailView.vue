@@ -1,24 +1,37 @@
 <template>
   <div class="detail">
     <div v-if="brewery">
-      <h1>{{ brewery.name }}</h1>
-      <p><strong>Type:</strong> <TypeBadge :brewery-type="brewery.brewery_type" /></p>
-      <p><strong>Address:</strong> {{ brewery.street }}, {{ brewery.city }}, {{ brewery.state }}</p>
+      <div class="row">
+        <div class="col-6">
+          <h1>{{ brewery.name }}</h1>
+          <p><strong>Type:</strong> <TypeBadge :brewery-type="brewery.brewery_type" /></p>
+          <p>
+            <strong>Address:</strong> {{ brewery.street }}, {{ brewery.city }}, {{ brewery.state }}
+          </p>
 
-      <p>
-        <strong>Website:</strong>
-        &nbsp;<a :href="brewery.website_url" target="_blank">{{ brewery.website_url }}</a>
-      </p>
-      <p><strong>Phone Number:</strong> {{ formattedPhoneNumber }}</p>
-      <br /><br />
-      <router-link to="/"> Back to List </router-link>
+          <p>
+            <strong>Website:</strong>
+            &nbsp;<a :href="brewery.website_url" target="_blank">{{ brewery.website_url }}</a>
+          </p>
+          <p><strong>Phone Number:</strong> {{ formattedPhoneNumber }}</p>
+          <br /><br />
+          <router-link to="/"> Back to List </router-link>
+        </div>
+
+        <div class="col-6">
+          <GoogleMap
+            api-key="AIzaSyDD2UoIaRviqN6FIHVrSvoUr01uCdSZwcM"
+            style="width: 100%; height: 500px"
+            :center="center"
+            :zoom="15"
+          >
+            <Marker :options="{ position: center }" />
+          </GoogleMap>
+        </div>
+      </div>
     </div>
     <div v-else>
       <h3>Loading brewery details...</h3>
-    </div>
-
-    <div v-if="error">
-      <h3>{{ error }}</h3>
     </div>
   </div>
 </template>
@@ -27,10 +40,11 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import TypeBadge from '../components/TypeBadge.vue'
+import { GoogleMap, Marker } from 'vue3-google-map'
+import type { Brewery } from '@/types/brewery'
 
-const brewery = ref(null)
+const brewery = ref<Brewery | null>(null)
 const route = useRoute()
-const error = ref(null)
 
 const formattedPhoneNumber = computed(() => {
   const phone = brewery.value?.phone || null
@@ -38,6 +52,13 @@ const formattedPhoneNumber = computed(() => {
   const cleaned = phone.replace(/\D/g, '') // Remove non-numeric characters
   const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/)
   return match ? `(${match[1]}) ${match[2]}-${match[3]}` : phone
+})
+
+const center = computed(() => {
+  return {
+    lat: brewery.value?.latitude,
+    lng: brewery.value?.longitude,
+  }
 })
 
 const fetchBreweryDetails = async () => {
@@ -53,9 +74,8 @@ const fetchBreweryDetails = async () => {
     const data = await response.json()
 
     brewery.value = Array.isArray(data) ? data[0] : data
-  } catch (error) {
-    error.value = 'Failed to load brewery details. Please try again later.'
-    console.error('Error fetching brewery details:', error)
+  } catch (e) {
+    console.error('Error fetching brewery details:', e)
   }
 }
 

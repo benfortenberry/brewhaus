@@ -29,8 +29,9 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import debounce from 'lodash.debounce'
 import ListItems from '../components/ListItems.vue'
+import type { Brewery } from '@/types/brewery'
 
-const breweries = ref([])
+const breweries = ref<Brewery[]>([])
 const page = ref(1)
 const searchQuery = ref('')
 const perPage = ref(10)

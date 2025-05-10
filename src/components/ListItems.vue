@@ -23,10 +23,11 @@
 
 <script setup lang="ts">
 import TypeBadge from '../components/TypeBadge.vue'
+import type { Brewery } from '@/types/brewery'
 
 const props = defineProps({
   breweries: {
-    type: Array,
+    type: Array<Brewery>,
     required: true,
   },
 })
