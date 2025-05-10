@@ -22,7 +22,7 @@
     <h3 v-if="!loading && breweries.length == 0">No Breweries found.</h3>
     <ListItems :breweries="breweries" />
 
-    <h3 v-if="loading" class="loading">Loading more breweries...</h3>
+    <h3 v-if="loading" class="loading">Loading breweries...</h3>
   </div>
 </template>
 <script setup lang="ts">

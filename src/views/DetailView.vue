@@ -19,7 +19,14 @@
         </div>
 
         <div class="col-6">
-          <GoogleMap :api-key="mapKey" class="map" :center="center" :zoom="15">
+          <GoogleMap
+            data-test-id="GoogleMap"
+            name="GoogleMap"
+            :api-key="mapKey"
+            class="map"
+            :center="center"
+            :zoom="15"
+          >
             <Marker :options="{ position: center }" />
           </GoogleMap>
         </div>
