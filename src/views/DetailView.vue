@@ -20,7 +20,7 @@
 
         <div class="col-6">
           <GoogleMap
-            api-key="AIzaSyDD2UoIaRviqN6FIHVrSvoUr01uCdSZwcM"
+            :api-key="mapKey"
             style="width: 100%; height: 500px"
             :center="center"
             :zoom="15"
@@ -45,6 +45,8 @@ import type { Brewery } from '@/types/brewery'
 
 const brewery = ref<Brewery | null>(null)
 const route = useRoute()
+
+const mapKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
 const formattedPhoneNumber = computed(() => {
   const phone = brewery.value?.phone || null
