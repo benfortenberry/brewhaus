@@ -57,9 +57,6 @@ const fetchBreweries = () => {
   } else {
     apiUrl = `https://api.openbrewerydb.org/v1/breweries?page=${page.value}&per_page=${perPage.value}`
   }
-  // const apiUrl = searchQuery.value
-  //   ? `https://api.openbrewerydb.org/v1/breweries/search?query=${searchQuery.value}&page=${page.value}&per_page=${perPage.value}`
-  //   : `https://api.openbrewerydb.org/v1/breweries?page=${page.value}&per_page=${perPage.value}`
 
   fetch(apiUrl)
     .then((response) => response.json())
