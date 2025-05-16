@@ -9,13 +9,8 @@
     <br />
 
     <div class="search-container">
-      <input
-        type="text"
-        placeholder="Search breweries..."
-        class="search-input"
-        v-model="searchQuery"
-        @input="debouncedSearch"
-      />
+      <input type="text" placeholder="Search breweries..." class="search-input" v-model="searchQuery"
+        @input="debouncedSearch" />
       <button v-if="searchQuery" class="clear-button" @click="clearSearch">Clear</button>
     </div>
     <br />
@@ -26,17 +21,23 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import { useSearchStore } from '@/stores/search'
 import debounce from 'lodash.debounce'
 import ListItems from '../components/ListItems.vue'
 import type { Brewery } from '@/types/brewery'
 
+const searchStore = useSearchStore()
 const breweries = ref<Brewery[]>([])
 const page = ref(1)
-const searchQuery = ref('')
 const perPage = ref(10)
 const loading = ref(false)
 const hasMore = ref(true)
+
+const searchQuery = computed({
+  get: () => searchStore.searchQuery,
+  set: (val) => searchStore.setSearchQuery(val),
+})
 
 const fetchBreweries = () => {
   if (loading.value || !hasMore.value) return
@@ -74,7 +75,7 @@ const debouncedSearch = debounce(() => {
 }, 300)
 
 const clearSearch = () => {
-  searchQuery.value = ''
+  searchStore.clearSearchQuery();
   breweries.value = []
   hasMore.value = true
   page.value = 1
@@ -112,6 +113,7 @@ a {
 a:hover {
   color: white;
 }
+
 .search-container {
   display: flex;
   align-items: center;
@@ -160,6 +162,7 @@ input[type='text']:focus {
   font-size: 1.5rem;
   margin-top: 2rem;
 }
+
 h2 {
   text-align: center;
 }
