@@ -3,7 +3,7 @@
     <h2>
       Willkommen! Below you'll find a listing of the finest breweries.
       <br />
-      <a href="#" @click="findByLocation">Find breweries in your area</a>
+      <a href="#" @click="getLocation">Find breweries in your area</a>
       or try your luck with a
 
       <router-link to="/detail/random">random brewery</router-link>.
@@ -39,15 +39,27 @@ const perPage = ref(10)
 const loading = ref(false)
 const hasMore = ref(true)
 const filteredByLocation = ref(false)
+const lat = ref(0)
+const lon = ref(0)
 
 const fetchBreweries = () => {
   if (loading.value || !hasMore.value) return
 
   loading.value = true
 
-  const apiUrl = searchQuery.value
-    ? `https://api.openbrewerydb.org/v1/breweries/search?query=${searchQuery.value}&page=${page.value}&per_page=${perPage.value}`
-    : `https://api.openbrewerydb.org/v1/breweries?page=${page.value}&per_page=${perPage.value}`
+  let apiUrl = '';
+
+  if (searchQuery.value) {
+    apiUrl = `https://api.openbrewerydb.org/v1/breweries/search?query=${searchQuery.value}&page=${page.value}&per_page=${perPage.value}`
+  }
+  else if (filteredByLocation.value) {
+    apiUrl = `https://api.openbrewerydb.org/v1/breweries?by_dist=${lat.value},${lon.value}`
+  } else {
+    apiUrl = `https://api.openbrewerydb.org/v1/breweries?page=${page.value}&per_page=${perPage.value}`
+  }
+  // const apiUrl = searchQuery.value
+  //   ? `https://api.openbrewerydb.org/v1/breweries/search?query=${searchQuery.value}&page=${page.value}&per_page=${perPage.value}`
+  //   : `https://api.openbrewerydb.org/v1/breweries?page=${page.value}&per_page=${perPage.value}`
 
   fetch(apiUrl)
     .then((response) => response.json())
@@ -65,22 +77,15 @@ const fetchBreweries = () => {
     })
 }
 
-const findByLocation = () => {
+const getLocation = () => {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition((position) => {
-      const lat = position.coords.latitude
-      const lon = position.coords.longitude
-      const apiUrl = `https://api.openbrewerydb.org/v1/breweries?by_dist=${lat},${lon}`
+      lat.value = position.coords.latitude
+      lon.value = position.coords.longitude
+      breweries.value = []
+      filteredByLocation.value = true
+      fetchBreweries()
 
-      fetch(apiUrl)
-        .then((response) => response.json())
-        .then((data) => {
-          breweries.value = data
-          filteredByLocation.value = true
-        })
-        .catch((error) => {
-          console.error('Error fetching breweries by location:', error)
-        })
     })
   } else {
     alert('Geolocation is not supported by this browser.')
@@ -115,7 +120,11 @@ const handleScroll = () => {
   const bottomPosition = document.documentElement.offsetHeight - 100
 
   if (scrollPosition >= bottomPosition) {
-    fetchBreweries()
+
+    if (!filteredByLocation.value) {
+
+      fetchBreweries()
+    }
   }
 }
 
