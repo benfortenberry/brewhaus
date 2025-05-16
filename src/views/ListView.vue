@@ -1,25 +1,26 @@
 <template>
   <div>
     <h2>
-      Willkommen! Below you'll find a listing of the finest breweries. Or try your luck with a
+      Willkommen! Below you'll find a listing of the finest breweries.
+      <br />
+      <a href="#" @click="findByLocation">Find breweries in your area</a>
+      or try your luck with a
 
       <router-link to="/detail/random">random brewery</router-link>.
     </h2>
 
     <br />
-
     <div class="search-container">
-      <input
-        type="text"
-        placeholder="Search breweries..."
-        class="search-input"
-        v-model="searchQuery"
-        @input="debouncedSearch"
-      />
-      <button v-if="searchQuery" class="clear-button" @click="clearSearch">Clear</button>
+      <label for="search">Search: &nbsp;</label>
+      <input type="text" placeholder="Enter a search term..." class="search-input" v-model="searchQuery"
+        @input="debouncedSearch" />
+      <button v-if="searchQuery" class="button clear-search" @click="clearSearch">Clear</button>
     </div>
     <br />
     <h3 v-if="!loading && breweries.length == 0">No Breweries found.</h3>
+    <h3 v-if="filteredByLocation && breweries.length > 0">
+      Breweries near you: <button class="button clear-filter" @click="clearSearch">Clear</button>
+    </h3>
     <ListItems :breweries="breweries" />
 
     <h3 v-if="loading" class="loading">Loading breweries...</h3>
@@ -37,6 +38,7 @@ const searchQuery = ref('')
 const perPage = ref(10)
 const loading = ref(false)
 const hasMore = ref(true)
+const filteredByLocation = ref(false)
 
 const fetchBreweries = () => {
   if (loading.value || !hasMore.value) return
@@ -63,6 +65,28 @@ const fetchBreweries = () => {
     })
 }
 
+const findByLocation = () => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((position) => {
+      const lat = position.coords.latitude
+      const lon = position.coords.longitude
+      const apiUrl = `https://api.openbrewerydb.org/v1/breweries?by_dist=${lat},${lon}`
+
+      fetch(apiUrl)
+        .then((response) => response.json())
+        .then((data) => {
+          breweries.value = data
+          filteredByLocation.value = true
+        })
+        .catch((error) => {
+          console.error('Error fetching breweries by location:', error)
+        })
+    })
+  } else {
+    alert('Geolocation is not supported by this browser.')
+  }
+}
+
 const debouncedSearch = debounce(() => {
   if (searchQuery.value.length < 3 && searchQuery.value.length > 0) {
     return
@@ -70,6 +94,7 @@ const debouncedSearch = debounce(() => {
   page.value = 1
   breweries.value = []
   hasMore.value = true
+  filteredByLocation.value = false
   fetchBreweries()
 }, 300)
 
@@ -78,6 +103,7 @@ const clearSearch = () => {
   breweries.value = []
   hasMore.value = true
   page.value = 1
+  filteredByLocation.value = false
   fetchBreweries()
 }
 
@@ -112,6 +138,7 @@ a {
 a:hover {
   color: white;
 }
+
 .search-container {
   display: flex;
   align-items: center;
@@ -141,17 +168,24 @@ input[type='text']:focus {
   border-bottom-left-radius: 4px;
 }
 
-.clear-button {
+.button {
   background-color: #fa872b;
   color: white;
   border: none;
   cursor: pointer;
   font-size: 0.875rem;
+}
+
+.clear-search {
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
 }
 
-.clear-button:hover {
+.clear-filter {
+  margin-bottom: 5px;
+}
+
+.button:hover {
   background-color: #e37c27;
 }
 
@@ -160,6 +194,7 @@ input[type='text']:focus {
   font-size: 1.5rem;
   margin-top: 2rem;
 }
+
 h2 {
   text-align: center;
 }
